@@ -1,19 +1,29 @@
-import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { setContactsFilter } from 'redux/filter';
+import { getContactsFilter } from 'redux/selectors';
 import css from './Filter.module.css';
 
-export default function Filter({ value, onHandlerFilterChange, onDisplayAll }) {
-  const filterInputId = nanoid();
+export default function Filter() {
+  const dispatch = useDispatch();
+  const filter = useSelector(getContactsFilter);
+
+  const onHandlerFilterChange = ({ currentTarget: { value } }) => {
+    const normalizeText = value.toLowerCase().trim();
+    dispatch(setContactsFilter(normalizeText));
+  };
+
+  const onDisplayAll = () => {
+    dispatch(setContactsFilter(''));
+  };
 
   return (
-    <label htmlFor={filterInputId} className={css.inputBlock}>
+    <label className={css.inputBlock}>
       Find contacts by name
       <input
         type="text"
         name="name"
-        id={filterInputId}
         className={css.inputField}
-        value={value}
+        value={filter}
         placeholder="Enter name"
         onChange={onHandlerFilterChange}
       />
@@ -23,9 +33,3 @@ export default function Filter({ value, onHandlerFilterChange, onDisplayAll }) {
     </label>
   );
 }
-
-Filter.propTypes = {
-  value: PropTypes.string.isRequired,
-  onHandlerFilterChange: PropTypes.func.isRequired,
-  onDisplayAll: PropTypes.func.isRequired,
-};
